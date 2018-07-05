@@ -11,7 +11,7 @@ class mqtt_client_threaded:
     broker_port = 1883
     
     def __init__(self, client_id=""):
-        mqtt_client_id = client_id + str(time.time()) 
+        mqtt_client_id = client_id + str(time.time()) # Always create unique client id 
         self.client = mqtt.Client(client_id=mqtt_client_id, userdata=self.userdata)
         pass
     
@@ -48,6 +48,8 @@ class mqtt_client_threaded:
         return True
         
     def stop(self):
-        self.client.loop_stop()
-        self.client.disconnect()
-        print("[Success] Disconnected from " + self.broker_ip + ":" + str(self.broker_port) + ", loop stop")
+        if(mqtt.MQTT_ERR_SUCCESS == self.client.disconnect()):
+            print("[Success] Disconnected from " + self.broker_ip + ":" + str(self.broker_port) + ", loop stop")
+            self.client.loop_stop()
+        else:
+            print("[failed] Cannot disconnect from MQTT broker " + self.broker_ip + ":" + str(self.broker_port))
